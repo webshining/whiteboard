@@ -19,6 +19,10 @@ The client uses [Excalidraw](https://excalidraw.com/) and is served directly by 
    In the project directory, run:
 
     ```sh
+    cd frontend
+    yarn build
+
+    cd ../
     cargo run
     ```
 

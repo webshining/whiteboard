@@ -1,5 +1,5 @@
 use axum::{Router, routing::get};
-use tower_http::cors::CorsLayer;
+use tower_http::{cors::CorsLayer, services::ServeDir};
 
 mod models;
 mod routes;
@@ -13,6 +13,7 @@ async fn main() {
 
     let app = Router::new()
         .route("/", get(root))
+        .nest_service("/assets", ServeDir::new("frontend/dist/assets"))
         .layer(ws().await)
         .layer(CorsLayer::permissive());
 

@@ -16,4 +16,4 @@ socketioxide = {version = "0.17"}
 tracing = {version = "0.1"}
 tracing-subscriber = {version = "0.3"}
 tower = {version = "0.5"}
-tower-http = { version = "0.6", features = ["cors"] }
+tower-http = { version = "0.6", features = ["cors", "fs"] }

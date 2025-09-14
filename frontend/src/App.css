@@ -1,0 +1,33 @@
+* {
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+}
+
+body,
+#root {
+	width: 100dvw;
+	height: 100dvh;
+
+	background: #3c3c3c;
+}
+
+.content__wrapper {
+	width: 100%;
+	height: 100%;
+
+	display: flex;
+	justify-content: center;
+	align-items: center;
+
+	padding: 10px;
+}
+
+.content {
+	width: 100%;
+	height: 100%;
+
+	border: 3px solid #5c5c5c;
+	border-radius: 15px;
+	overflow: hidden;
+}
