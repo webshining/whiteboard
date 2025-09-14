@@ -11,7 +11,7 @@ The client uses [Excalidraw](https://excalidraw.com/) and is served directly by 
 
 ## Example Interface
 
-![Whiteboard Example](https://github.com/webshinging/whiteboard/blob/main/example.png?raw=true)
+![Whiteboard Example](https://github.com/webshining/whiteboard/raw/main/example.png)
 
 ## Getting Started
 
