@@ -1,9 +1,15 @@
-use axum::{Router, routing::get};
+use std::sync::Arc;
+
+use axum::{Extension, Router, routing::get};
 use tower_http::{cors::CorsLayer, services::ServeDir};
 
-mod models;
+mod board;
+mod room;
 mod routes;
-use crate::routes::{root::root, ws::ws};
+use crate::{
+    room::Manager,
+    routes::{root::root, ws::ws},
+};
 
 #[tokio::main]
 async fn main() {
@@ -11,11 +17,14 @@ async fn main() {
         .with_max_level(tracing::Level::DEBUG)
         .init();
 
+    let rooms_manager = Arc::new(Manager::new());
+
     let app = Router::new()
         .route("/", get(root))
         .nest_service("/assets", ServeDir::new("frontend/dist/assets"))
-        .layer(ws().await)
-        .layer(CorsLayer::permissive());
+        .layer(ws(rooms_manager.clone()).await)
+        .layer(CorsLayer::permissive())
+        .layer(Extension(rooms_manager.clone()));
 
     let listener = tokio::net::TcpListener::bind("127.0.0.1:4000")
         .await
