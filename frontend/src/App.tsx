@@ -2,6 +2,8 @@ import { CaptureUpdateAction, Excalidraw, hashElementsVersion } from "@excalidra
 import type { ExcalidrawElement } from "@excalidraw/excalidraw/element/types";
 import "@excalidraw/excalidraw/index.css";
 import type { BinaryFiles, ExcalidrawImperativeAPI } from "@excalidraw/excalidraw/types";
+import { Device } from "mediasoup-client";
+import type { RtpCapabilities, TransportOptions } from "mediasoup-client/types";
 import { useEffect, useRef } from "react";
 import { io, type Socket } from "socket.io-client";
 import "./App.css";
@@ -13,8 +15,35 @@ function App() {
 	const hash = useRef<number>(0);
 	const api = useRef<ExcalidrawImperativeAPI | null>(null);
 
+	const device = useRef<Device | null>(null);
+
 	useEffect(() => {
-		socket.current = io("ws://localhost:4000/board");
+		socket.current = io("ws://localhost:4000/");
+		device.current = new Device();
+
+		socket.current.emit("rtpCapabilities", {}, async (routerRtpCapabilities: RtpCapabilities) => {
+			await device.current!.load({ routerRtpCapabilities });
+			socket.current!.emit("createTransport", true, async (transportOptions: TransportOptions) => {
+				console.log(1);
+				const sendTransport = device.current!.createSendTransport(transportOptions);
+
+				sendTransport.on("connect", ({ dtlsParameters }, callback) => {
+					console.log(2);
+					socket.current!.emit("connectTransport", dtlsParameters, () => callback());
+				});
+
+				sendTransport.on("produce", async ({ kind, rtpParameters }, callback) => {
+					console.log(3);
+					socket.current!.emit("produce", { kind, rtpParameters }, (id: string) => callback({ id }));
+				});
+
+				const stream = await navigator.mediaDevices.getUserMedia({
+					audio: { noiseSuppression: false, echoCancellation: false, autoGainControl: false },
+				});
+				const track = stream.getTracks()[0];
+				await sendTransport.produce({ track });
+			});
+		});
 
 		socket.current.on("change", (data) => {
 			handleChange(data, false);

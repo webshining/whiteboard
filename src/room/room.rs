@@ -1,9 +1,26 @@
-use std::collections::HashMap;
+use std::{
+    collections::HashMap,
+    num::{NonZeroU8, NonZeroU32},
+};
 
-use mediasoup::prelude::{Producer, Router, RouterOptions, WorkerManager, WorkerSettings};
+use mediasoup::prelude::{
+    MimeTypeAudio, Producer, Router, RouterOptions, RtcpFeedback, RtpCodecCapability,
+    RtpCodecParametersParameters, WorkerManager, WorkerSettings,
+};
 use tokio::sync::{Mutex, RwLock};
 
 use crate::board::Board;
+
+fn media_codecs() -> Vec<RtpCodecCapability> {
+    vec![RtpCodecCapability::Audio {
+        mime_type: MimeTypeAudio::Opus,
+        preferred_payload_type: None,
+        clock_rate: NonZeroU32::new(48000).unwrap(),
+        channels: NonZeroU8::new(2).unwrap(),
+        parameters: RtpCodecParametersParameters::from([("useinbandfec", 1_u32.into())]),
+        rtcp_feedback: vec![RtcpFeedback::TransportCc],
+    }]
+}
 
 pub struct Room {
     pub board: RwLock<Board>,
@@ -18,7 +35,7 @@ impl Room {
             .await
             .unwrap();
         let router = worker
-            .create_router(RouterOptions::default())
+            .create_router(RouterOptions::new(media_codecs()))
             .await
             .unwrap();
         Self {
@@ -28,12 +45,12 @@ impl Room {
         }
     }
 
-    pub async fn add_user(&mut self, id: String) {
+    pub async fn add_user(&self, id: String) {
         let mut clients = self.clients.lock().await;
         clients.insert(id, Vec::new());
     }
 
-    pub async fn remove_user(&mut self, id: String) {
+    pub async fn remove_user(&self, id: String) {
         let mut clients = self.clients.lock().await;
         clients.remove(&id);
     }
