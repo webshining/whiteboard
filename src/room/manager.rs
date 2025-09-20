@@ -1,6 +1,5 @@
 use std::{collections::HashMap, sync::Arc};
 
-use mediasoup::prelude::WorkerManager;
 use tokio::sync::RwLock;
 
 use super::room::Room;
@@ -16,7 +15,7 @@ impl Manager {
         }
     }
 
-    pub async fn get_or_create(&self, worker_manager: &WorkerManager, id: String) -> Arc<Room> {
+    pub async fn get_or_create(&self, id: String) -> Arc<Room> {
         {
             let rooms = self.rooms.read().await;
             if let Some(room) = rooms.get(&id) {
@@ -29,7 +28,7 @@ impl Manager {
             return room.clone();
         }
 
-        let room = Arc::new(Room::new(worker_manager).await);
+        let room = Arc::new(Room::new().await);
         rooms.insert(id, room.clone());
         room
     }
