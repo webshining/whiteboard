@@ -18,12 +18,9 @@ pub async fn ws(rooms_manager: Arc<Manager>) -> SocketIoLayer {
 
         // --- CLIENT ACTIONS ---
         info!("client {} joined", &s.id);
-        room.add_user(s.id.to_string()).await;
         {
-            let room = room.clone();
             s.on_disconnect(async move |s: SocketRef| {
                 info!("client {} left", &s.id);
-                room.remove_user(s.id.to_string()).await;
             });
         }
 

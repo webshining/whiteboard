@@ -20,7 +20,8 @@ The client uses [Excalidraw](https://excalidraw.com/) and is served directly by 
 
     ```sh
     cd frontend
-    yarn build
+    npm i
+    npm run build
 
     cd ../
     cargo run
@@ -29,6 +30,6 @@ The client uses [Excalidraw](https://excalidraw.com/) and is served directly by 
     The server will serve both the backend and the Excalidraw-based client.
 
 2. **Access the Whiteboard**  
-   Open your browser and go to the address shown in the server output `http://localhost:3000`.
+   Open your browser and go to the address shown in the server output `http://localhost:4000`.
 
 Make sure the server is running for full functionality.

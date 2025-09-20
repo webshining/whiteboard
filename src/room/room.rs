@@ -12,8 +12,4 @@ impl Room {
             board: RwLock::new(Board::new()),
         }
     }
-
-    pub async fn add_user(&self, id: String) {}
-
-    pub async fn remove_user(&self, id: String) {}
 }
